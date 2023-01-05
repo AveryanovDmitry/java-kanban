@@ -4,8 +4,25 @@ import Tasks.Utils.Status;
 
 public class SubTask extends Task{
 
-    String epicName;
-    public SubTask(int id, String name, String description, Status status) {
-        super(id, name, description, status);
+    Integer epicID;
+    public SubTask(String name, String description, Status statu, Integer epicId) {
+       this.name = name;
+       this.description = description;
+       this.status = status;
+    }
+
+    public Integer getEpicID() {
+        return epicID;
+    }
+
+    @Override
+    public String toString() {
+        return "SubTask{" +
+                "epicID=" + epicID +
+                ", id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", status=" + status +
+                '}';
     }
 }

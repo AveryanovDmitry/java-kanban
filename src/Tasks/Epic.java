@@ -5,22 +5,30 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Epic extends Task{
-    Set<SubTask> subTaskList = new HashSet<>();
-    public Epic(int id, String name, String description, SubTask[] task) {
+    Set<Integer> subTaskSet = new HashSet<>();
+    public Epic(int id, String name, String description, Integer[] task) {
         this.id = id;
         this.name = name;
         this.description = description;
-        subTaskList.addAll(Arrays.asList(task));
+        subTaskSet.addAll(Arrays.asList(task));
     }
 
-    public Set<SubTask> getSubTaskList() {
-        return subTaskList;
+    public Set<Integer> getSubTaskSet() {
+        return subTaskSet;
+    }
+
+    public void addToSubTaskList(Integer id){
+        subTaskSet.add(id);
+    }
+
+    public void clearSubTaskSet(){
+        subTaskSet.clear();
     }
 
     @Override
     public String toString() {
         return "Epic{" +
-                "subTaskList=" + subTaskList +
+                "subTaskList=" + subTaskSet +
                 '}';
     }
 }
