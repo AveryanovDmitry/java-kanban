@@ -1,16 +1,16 @@
 package Tasks;
 
-import java.util.Arrays;
+import Tasks.Utils.Status;
+
 import java.util.HashSet;
 import java.util.Set;
 
 public class Epic extends Task{
     Set<Integer> subTaskSet = new HashSet<>();
-    public Epic(int id, String name, String description, Integer[] task) {
-        this.id = id;
+    public Epic(String name, String description, Status status) {
         this.name = name;
         this.description = description;
-        subTaskSet.addAll(Arrays.asList(task));
+        this.status = status;
     }
 
     public Set<Integer> getSubTaskSet() {
@@ -28,7 +28,11 @@ public class Epic extends Task{
     @Override
     public String toString() {
         return "Epic{" +
-                "subTaskList=" + subTaskSet +
+                "id= " + this.id +
+                " name= " + this.name +
+                " description= " + this.description +
+                " subTaskList= " + subTaskSet +
+                " status=" + this.status +
                 '}';
     }
 }

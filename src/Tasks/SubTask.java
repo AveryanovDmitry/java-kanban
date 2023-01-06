@@ -5,10 +5,11 @@ import Tasks.Utils.Status;
 public class SubTask extends Task{
 
     Integer epicID;
-    public SubTask(String name, String description, Status statu, Integer epicId) {
+    public SubTask(String name, String description, Status status, Integer epicId) {
        this.name = name;
        this.description = description;
        this.status = status;
+       this.epicID = epicId;
     }
 
     public Integer getEpicID() {

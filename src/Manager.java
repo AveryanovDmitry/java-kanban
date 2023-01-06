@@ -1,4 +1,5 @@
-﻿import Tasks.Epic;
+
+import Tasks.Epic;
 import Tasks.SubTask;
 import Tasks.Task;
 
@@ -10,7 +11,7 @@ public class Manager {
     private Map<Integer, Task> tasksMap = new HashMap<>();
 
     /**
-     * Методы добавления нового объекта в мапы
+     * Создание задачи
      */
     public void createTask(Task task) {
         task.setId(tasksMap.size() + 1);
@@ -32,9 +33,6 @@ public class Manager {
         }
     }
 
-    /**
-     * Гетеры всех значений мапы
-     */
     public Collection<Epic> getEpicTasksMap() {
         return epicTasksMap.values();
     }
@@ -48,7 +46,7 @@ public class Manager {
     }
 
     /**
-     * Гетеры по id
+     * получение по id
      */
     public Task getTaskById(int id) {
         return tasksMap.get(id);
@@ -63,7 +61,7 @@ public class Manager {
     }
 
     /**
-     * Получение множества подзадач эпика по его id
+     * получение множества подзадач эпика по id
      */
     public Set<SubTask> getSubTasksSetByEpicID(int id) {
         Set<Integer> subTasksID = epicTasksMap.get(id).getSubTaskSet();
@@ -75,7 +73,7 @@ public class Manager {
     }
 
     /**
-     * Методы удаления всех задач
+     * удаление всез задач
      */
     public void deleteAllTasks() {
         tasksMap.clear();
@@ -96,7 +94,7 @@ public class Manager {
     }
 
     /**
-     * Методы удаления по id
+     * удаление по id
      */
     public void deleteTaskById(int id) {
         tasksMap.remove(id);
@@ -109,20 +107,19 @@ public class Manager {
     }
 
 
-    public void deleteEpicById(int id) {
-        epicTasksMap.remove(id);
-        for (Map.Entry<Integer, SubTask> entry : subTasksMap.entrySet()) {
-            if (entry.getValue().getEpicID() == id)
-                subTasksMap.remove(entry.getKey());
+    public void deleteEpicById(int epicId) {
+        for (Integer id : epicTasksMap.get(epicId).getSubTaskSet()) {
+            deleteSubtaskById(id);
         }
+        epicTasksMap.remove(epicId);
     }
 
     /**
-     * Методы обновления объекта в мапе
+     * обновление задачи
      */
     public void updateTask(Task task) {
         for (Integer id : tasksMap.keySet()) {
-            if (task.equals(tasksMap.get(id))) {
+            if (task.getName().equals(tasksMap.get(id).getName())) {
                 task.setId(id);
                 tasksMap.put(id, task);
             }
@@ -131,7 +128,7 @@ public class Manager {
 
     public void updateEpic(Epic epic) {
         for (Integer id : epicTasksMap.keySet()) {
-            if (epic.equals(epicTasksMap.get(id))) {
+            if (epic.getName().equals(epicTasksMap.get(id).getName())) {
                 epic.setId(id);
                 epicTasksMap.put(id, epic);
             }
@@ -140,7 +137,7 @@ public class Manager {
 
     public void updateSubTask(SubTask subTask) {
         for (Integer id : subTasksMap.keySet()) {
-            if (subTask.equals(subTasksMap.get(id))) {
+            if (subTask.getName().equals(subTasksMap.get(id).getName())) {
                 subTask.setId(id);
                 subTasksMap.put(id, subTask);
             }
