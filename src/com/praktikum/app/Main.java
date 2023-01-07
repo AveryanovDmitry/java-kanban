@@ -1,7 +1,10 @@
-import Tasks.Epic;
-import Tasks.SubTask;
-import Tasks.Task;
-import Tasks.Utils.Status;
+package com.praktikum.app;
+
+import com.praktikum.app.models.Epic;
+import com.praktikum.app.models.SubTask;
+import com.praktikum.app.models.Task;
+import com.praktikum.app.models.Utils.Status;
+import com.praktikum.app.service.Manager;
 
 public class Main {
     public static void main(String[] args) {

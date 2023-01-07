@@ -1,4 +1,4 @@
-package Tasks.Utils;
+package com.praktikum.app.models.Utils;
 
 public enum Status {
     NEW,

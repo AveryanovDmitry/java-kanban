@@ -1,6 +1,6 @@
-package Tasks;
+package com.praktikum.app.models;
 
-import Tasks.Utils.Status;
+import com.praktikum.app.models.Utils.Status;
 
 import java.util.Objects;
 

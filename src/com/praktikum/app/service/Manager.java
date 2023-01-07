@@ -1,7 +1,8 @@
+package com.praktikum.app.service;
 
-import Tasks.Epic;
-import Tasks.SubTask;
-import Tasks.Task;
+import com.praktikum.app.models.Epic;
+import com.praktikum.app.models.SubTask;
+import com.praktikum.app.models.Task;
 
 import java.util.*;
 
