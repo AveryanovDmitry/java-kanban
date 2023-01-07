@@ -12,34 +12,32 @@ public class Manager {
     private Map<Integer, Subtask> subtasks = new HashMap<>();
     private Map<Integer, Task> tasks = new HashMap<>();
 
-    private int idEpic = 1;
-    private int idSubTask = 1;
-    private int idTask = 1;
+    private int id = 1;
 
     /**
      * Создание задачи
      */
     public void createTask(Task task) {
-        task.setId(idTask);
-        idTask++;
+        task.setId(id);
+        id++;
         tasks.put(task.getId(), task);
     }
 
     public void createEpicTask(Epic epic) {
-        epic.setId(idEpic);
-        idEpic++;
+        epic.setId(id);
+        id++;
         epics.put(epic.getId(), epic);
     }
 
     public void createSubTask(Subtask task) {
-        task.setId(idSubTask);
-        subtasks.put(idSubTask, task);
-        Epic epic = epics.get(subtasks.get(idSubTask).getEpicID());
+        task.setId(id);
+        subtasks.put(id, task);
+        Epic epic = epics.get(subtasks.get(id).getEpicId());
         if (epic != null) {
-            epic.addToSubTasks(idSubTask);
+            epic.addToSubTasks(id);
             updateStatusEpic(epic);
         }
-        idSubTask++;
+        id++;
     }
 
     public List<Epic> getEpics() {
@@ -72,7 +70,7 @@ public class Manager {
     /**
      * получение множества подзадач эпика по id
      */
-    public Set<Subtask> getSubTasksSetByEpicId(int id) {
+    public Set<Subtask> getSubTasksByEpicId(int id) {
         Set<Integer> subtasksId = epics.get(id).getSubTasks();
         Set<Subtask> result = new HashSet<>();
         for (int idSubtask : subtasksId) {
@@ -86,14 +84,17 @@ public class Manager {
      */
     public void deleteAllTasks() {
         tasks.clear();
-        idTask = 1;
+        if(epics.isEmpty() && subtasks.isEmpty()){
+            id = 1;
+        }
     }
 
     public void deleteAllEpicTasks() {
         subtasks.clear();
         epics.clear();
-        idSubTask = 1;
-        idEpic = 1;
+        if(tasks.isEmpty()){
+            id = 1;
+        }
     }
 
     public void deleteAllSubTasks() {
@@ -102,7 +103,6 @@ public class Manager {
             epic.setStatus(Status.NEW);
         }
         subtasks.clear();
-        idSubTask = 1;
     }
 
     /**
@@ -113,7 +113,7 @@ public class Manager {
     }
 
     public void deleteSubtaskById(int id) {
-        int epicId = subtasks.get(id).getEpicID();
+        int epicId = subtasks.get(id).getEpicId();
         subtasks.remove(id);
         Epic epic = epics.get(epicId);
         epic.getSubTasks().remove(id);
@@ -131,36 +131,17 @@ public class Manager {
     /**
      * обновление задачи
      */
-    public void updateTask(Task task) {//у аргумента не присвоен id, поэтому здесь у меня поиск по имени задачи,
-        // id присваивается в менеджере при добавлении в мапу, не в модели
-        for (Integer id : tasks.keySet()) {
-            if (task.getName().equals(tasks.get(id).getName())) {
-                task.setId(id);//Нахожу по имени обновляемую задачу и так определяю её id
-                tasks.put(id, task);
-            }
-        }
+    public void updateTask(Task task) {
+        tasks.put(task.getId(), task);
     }
 
-    public void updateEpic(Epic newEpic) {//у аргумента не присвоен id, поэтому здесь у меня поиск по имени задачи,
-        // id присваивается в менеджере при добавлении в мапу, не в модели
-        for (Integer id : epics.keySet()) {
-            if (newEpic.getName().equals(epics.get(id).getName())) {
-                newEpic.setId(id);//Нахожу по имени обновляемую задачу и так определяю её id
-                newEpic.setSubTasks(epics.get(id).getSubTasks());
-                epics.put(id, newEpic);
-            }
-        }
+    public void updateEpic(Epic newEpic) {
+        epics.put(newEpic.getId(), newEpic);
     }
 
-    public void updateSubTask(Subtask subtask) {//у аргумента не присвоен id, поэтому здесь у меня поиск по имени задачи,
-        // id присваивается в менеджере при добавлении в мапу, не в модели.
-        for (Integer id : subtasks.keySet()) {
-            if (subtask.getName().equals(subtasks.get(id).getName())) {
-                subtask.setId(id);//Нахожу по имени обновляемую задачу и так определяю её id
-                subtasks.put(id, subtask);
-                updateStatusEpic(epics.get(subtasks.get(id).getEpicID()));
-            }
-        }
+    public void updateSubtask(Subtask subtask) {
+        subtasks.put(subtask.getId(), subtask);
+        updateStatusEpic(epics.get(subtask.getEpicId()));
     }
 
     /**
@@ -174,18 +155,20 @@ public class Manager {
         int flagDone = 1;
         int flagNew = 1;
         for (Integer idSubtask : epic.getSubTasks()) {
-            if (subtasks.get(idSubtask).getStatus() != Status.NEW)
+            Status status = subtasks.get(idSubtask).getStatus();
+            if (status != Status.NEW)
                 flagNew = 0;
-            if (subtasks.get(idSubtask).getStatus() != Status.DONE)
+            if (status != Status.DONE)
                 flagDone = 0;
             if (flagNew == 0 && flagDone == 0) {
                 epic.setStatus(Status.IN_PROGRESS);
                 return;
             }
         }
-        if (flagDone == 1)
+        if (flagDone == 1) {
             epic.setStatus(Status.DONE);
-        else
+        } else {
             epic.setStatus(Status.NEW);
+        }
     }
 }
