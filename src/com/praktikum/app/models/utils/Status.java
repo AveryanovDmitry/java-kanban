@@ -1,4 +1,4 @@
-package com.praktikum.app.models.Utils;
+package com.praktikum.app.models.utils;
 
 public enum Status {
     NEW,

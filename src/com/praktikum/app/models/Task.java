@@ -1,6 +1,6 @@
 package com.praktikum.app.models;
 
-import com.praktikum.app.models.Utils.Status;
+import com.praktikum.app.models.utils.Status;
 
 import java.util.Objects;
 
