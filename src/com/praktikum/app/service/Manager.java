@@ -1,74 +1,82 @@
 package com.praktikum.app.service;
 
 import com.praktikum.app.models.Epic;
-import com.praktikum.app.models.SubTask;
+import com.praktikum.app.models.Subtask;
 import com.praktikum.app.models.Task;
+import com.praktikum.app.models.utils.Status;
 
 import java.util.*;
 
 public class Manager {
-    private Map<Integer, Epic> epicTasksMap = new HashMap<>();
-    private Map<Integer, SubTask> subTasksMap = new HashMap<>();
-    private Map<Integer, Task> tasksMap = new HashMap<>();
+    private Map<Integer, Epic> epics = new HashMap<>();
+    private Map<Integer, Subtask> subtasks = new HashMap<>();
+    private Map<Integer, Task> tasks = new HashMap<>();
+
+    private int idEpic = 1;
+    private int idSubTask = 1;
+    private int idTask = 1;
 
     /**
      * Создание задачи
      */
     public void createTask(Task task) {
-        task.setId(tasksMap.size() + 1);
-        tasksMap.put(task.getId(), task);
+        task.setId(idTask);
+        idTask++;
+        tasks.put(task.getId(), task);
     }
 
     public void createEpicTask(Epic epic) {
-        epic.setId(epicTasksMap.size() + 1);
-        epicTasksMap.put(epic.getId(), epic);
+        epic.setId(idEpic);
+        idEpic++;
+        epics.put(epic.getId(), epic);
     }
 
-    public void createSubTask(SubTask task) {
-        int subTaskID = subTasksMap.size() + 1;
-        task.setId(subTaskID);
-        subTasksMap.put(subTaskID, task);
-        Epic epic = epicTasksMap.get(subTasksMap.get(subTaskID).getEpicID());
+    public void createSubTask(Subtask task) {
+        task.setId(idSubTask);
+        subtasks.put(idSubTask, task);
+        Epic epic = epics.get(subtasks.get(idSubTask).getEpicID());
         if (epic != null) {
-            epic.addToSubTaskList(subTaskID);
+            epic.addToSubTasks(idSubTask);
+            updateStatusEpic(epic);
         }
+        idSubTask++;
     }
 
-    public Collection<Epic> getEpicTasksMap() {
-        return epicTasksMap.values();
+    public List<Epic> getEpics() {
+        return List.copyOf(epics.values());
     }
 
-    public Collection<SubTask> getSubTasksMap() {
-        return subTasksMap.values();
+    public List<Subtask> getSubtasks() {
+        return List.copyOf(subtasks.values());
     }
 
-    public Collection<Task> getTasksMap() {
-        return tasksMap.values();
+    public List<Task> getTasks() {
+        return List.copyOf(tasks.values());
     }
 
     /**
      * получение по id
      */
     public Task getTaskById(int id) {
-        return tasksMap.get(id);
+        return tasks.get(id);
     }
 
     public Epic getEpicTaskById(int id) {
-        return epicTasksMap.get(id);
+        return epics.get(id);
     }
 
-    public SubTask getSubTaskById(int id) {
-        return subTasksMap.get(id);
+    public Subtask getSubTaskById(int id) {
+        return subtasks.get(id);
     }
 
     /**
      * получение множества подзадач эпика по id
      */
-    public Set<SubTask> getSubTasksSetByEpicID(int id) {
-        Set<Integer> subTasksID = epicTasksMap.get(id).getSubTaskSet();
-        Set<SubTask> result = new HashSet<>();
-        for (int i : subTasksID) {
-            result.add(subTasksMap.get(i));
+    public Set<Subtask> getSubTasksSetByEpicId(int id) {
+        Set<Integer> subtasksId = epics.get(id).getSubTasks();
+        Set<Subtask> result = new HashSet<>();
+        for (int idSubtask : subtasksId) {
+            result.add(subtasks.get(idSubtask));
         }
         return result;
     }
@@ -77,71 +85,107 @@ public class Manager {
      * удаление всез задач
      */
     public void deleteAllTasks() {
-        tasksMap.clear();
+        tasks.clear();
+        idTask = 1;
     }
 
     public void deleteAllEpicTasks() {
-        for (Integer i : epicTasksMap.keySet()) {
-            subTasksMap.remove(i);
-        }
-        epicTasksMap.clear();
+        subtasks.clear();
+        epics.clear();
+        idSubTask = 1;
+        idEpic = 1;
     }
 
     public void deleteAllSubTasks() {
-        for (Epic epic : epicTasksMap.values()) {
-            epic.clearSubTaskSet();
+        for (Epic epic : epics.values()) {
+            epic.clearSubTasks();
+            epic.setStatus(Status.NEW);
         }
-        subTasksMap.clear();
+        subtasks.clear();
+        idSubTask = 1;
     }
 
     /**
      * удаление по id
      */
     public void deleteTaskById(int id) {
-        tasksMap.remove(id);
+        tasks.remove(id);
     }
 
     public void deleteSubtaskById(int id) {
-        int epicId = subTasksMap.get(id).getEpicID();
-        subTasksMap.remove(id);
-        epicTasksMap.get(epicId).getSubTaskSet().remove(id);
+        int epicId = subtasks.get(id).getEpicID();
+        subtasks.remove(id);
+        Epic epic = epics.get(epicId);
+        epic.getSubTasks().remove(id);
+        updateStatusEpic(epic);
     }
 
 
     public void deleteEpicById(int epicId) {
-        for (Integer id : epicTasksMap.get(epicId).getSubTaskSet()) {
-            deleteSubtaskById(id);
+        for (Integer id : epics.get(epicId).getSubTasks()) {
+            subtasks.remove(id);
         }
-        epicTasksMap.remove(epicId);
+        epics.remove(epicId);
     }
 
     /**
      * обновление задачи
      */
-    public void updateTask(Task task) {
-        for (Integer id : tasksMap.keySet()) {
-            if (task.getName().equals(tasksMap.get(id).getName())) {
-                task.setId(id);
-                tasksMap.put(id, task);
+    public void updateTask(Task task) {//у аргумента не присвоен id, поэтому здесь у меня поиск по имени задачи,
+        // id присваивается в менеджере при добавлении в мапу, не в модели
+        for (Integer id : tasks.keySet()) {
+            if (task.getName().equals(tasks.get(id).getName())) {
+                task.setId(id);//Нахожу по имени обновляемую задачу и так определяю её id
+                tasks.put(id, task);
             }
         }
     }
 
-    public void updateEpic(Epic epic) {
-        for (Integer id : epicTasksMap.keySet()) {
-            if (epic.getName().equals(epicTasksMap.get(id).getName())) {
-                epic.setId(id);
-                epicTasksMap.put(id, epic);
+    public void updateEpic(Epic newEpic) {//у аргумента не присвоен id, поэтому здесь у меня поиск по имени задачи,
+        // id присваивается в менеджере при добавлении в мапу, не в модели
+        for (Integer id : epics.keySet()) {
+            if (newEpic.getName().equals(epics.get(id).getName())) {
+                newEpic.setId(id);//Нахожу по имени обновляемую задачу и так определяю её id
+                newEpic.setSubTasks(epics.get(id).getSubTasks());
+                epics.put(id, newEpic);
             }
         }
     }
 
-    public void updateSubTask(SubTask subTask) {
-        for (Integer id : subTasksMap.keySet()) {
-            if (subTask.getName().equals(subTasksMap.get(id).getName())) {
-                subTask.setId(id);
-                subTasksMap.put(id, subTask);
+    public void updateSubTask(Subtask subtask) {//у аргумента не присвоен id, поэтому здесь у меня поиск по имени задачи,
+        // id присваивается в менеджере при добавлении в мапу, не в модели.
+        for (Integer id : subtasks.keySet()) {
+            if (subtask.getName().equals(subtasks.get(id).getName())) {
+                subtask.setId(id);//Нахожу по имени обновляемую задачу и так определяю её id
+                subtasks.put(id, subtask);
+                updateStatusEpic(epics.get(subtasks.get(id).getEpicID()));
             }
         }
+    }
+
+    /**
+     * метод обновления статуса для эпика
+     */
+    private void updateStatusEpic(Epic epic) {
+        if (epic.getSubTasks().isEmpty()) {
+            epic.setStatus(Status.NEW);
+            return;
+        }
+        int flagDone = 1;
+        int flagNew = 1;
+        for (Integer idSubtask : epic.getSubTasks()) {
+            if (subtasks.get(idSubtask).getStatus() != Status.NEW)
+                flagNew = 0;
+            if (subtasks.get(idSubtask).getStatus() != Status.DONE)
+                flagDone = 0;
+            if (flagNew == 0 && flagDone == 0) {
+                epic.setStatus(Status.IN_PROGRESS);
+                return;
+            }
+        }
+        if (flagDone == 1)
+            epic.setStatus(Status.DONE);
+        else
+            epic.setStatus(Status.NEW);
     }
 }

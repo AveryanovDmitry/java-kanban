@@ -2,24 +2,23 @@ package com.praktikum.app.models;
 
 import com.praktikum.app.models.utils.Status;
 
-public class SubTask extends Task{
-
-    Integer epicID;
-    public SubTask(String name, String description, Status status, Integer epicId) {
+public class Subtask extends Task{
+    private int epicId;
+    public Subtask(String name, String description, Status status, Integer epicId) {
        this.name = name;
        this.description = description;
        this.status = status;
-       this.epicID = epicId;
+       this.epicId = epicId;
     }
 
     public Integer getEpicID() {
-        return epicID;
+        return epicId;
     }
 
     @Override
     public String toString() {
         return "SubTask{" +
-                "epicID=" + epicID +
+                "epicID=" + epicId +
                 ", id=" + id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +

@@ -6,23 +6,25 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Epic extends Task{
-    Set<Integer> subTaskSet = new HashSet<>();
-    public Epic(String name, String description, Status status) {
-        this.name = name;
-        this.description = description;
-        this.status = status;
+    private Set<Integer> subTasks = new HashSet<>();
+    public Epic(String name, String description) {
+        super(name, description, Status.NEW);
     }
 
-    public Set<Integer> getSubTaskSet() {
-        return subTaskSet;
+    public Set<Integer> getSubTasks() {
+        return subTasks;
     }
 
-    public void addToSubTaskList(Integer id){
-        subTaskSet.add(id);
+    public void addToSubTasks(Integer id){
+        subTasks.add(id);
     }
 
-    public void clearSubTaskSet(){
-        subTaskSet.clear();
+    public void clearSubTasks(){
+        subTasks.clear();
+    }
+
+    public void setSubTasks(Set<Integer> subTasks) {
+        this.subTasks = subTasks;
     }
 
     @Override
@@ -31,7 +33,7 @@ public class Epic extends Task{
                 "id= " + this.id +
                 " name= " + this.name +
                 " description= " + this.description +
-                " subTaskList= " + subTaskSet +
+                " subTaskList= " + subTasks +
                 " status=" + this.status +
                 '}';
     }
