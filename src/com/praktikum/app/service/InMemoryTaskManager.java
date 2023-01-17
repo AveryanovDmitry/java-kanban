@@ -7,7 +7,9 @@ import com.praktikum.app.models.utils.Status;
 
 import java.util.*;
 
-public class Manager {
+public class InMemoryTaskManager implements TaskManager{
+
+    public HistoryManager historyManager = Managers.getDefaultHistory();
     private Map<Integer, Epic> epics = new HashMap<>();
     private Map<Integer, Subtask> subtasks = new HashMap<>();
     private Map<Integer, Task> tasks = new HashMap<>();
@@ -15,20 +17,30 @@ public class Manager {
     private int id = 1;
 
     /**
+     * получение истории
+     */
+
+    @Override
+    public List<Task> getHistory() {
+        return historyManager.getHistory();
+    }
+
+    /**
      * Создание задачи
      */
+    @Override
     public void createTask(Task task) {
         task.setId(id);
         id++;
         tasks.put(task.getId(), task);
     }
-
+    @Override
     public void createEpicTask(Epic epic) {
         epic.setId(id);
         id++;
         epics.put(epic.getId(), epic);
     }
-
+    @Override
     public void createSubTask(Subtask task) {
         task.setId(id);
         subtasks.put(id, task);
@@ -39,15 +51,15 @@ public class Manager {
         }
         id++;
     }
-
+    @Override
     public List<Epic> getEpics() {
         return List.copyOf(epics.values());
     }
-
+    @Override
     public List<Subtask> getSubtasks() {
         return List.copyOf(subtasks.values());
     }
-
+    @Override
     public List<Task> getTasks() {
         return List.copyOf(tasks.values());
     }
@@ -55,21 +67,29 @@ public class Manager {
     /**
      * получение по id
      */
+    @Override
     public Task getTaskById(int id) {
-        return tasks.get(id);
+        Task task = tasks.get(id);
+        historyManager.add(task);
+        return task;
     }
-
+    @Override
     public Epic getEpicTaskById(int id) {
-        return epics.get(id);
+        Epic epic = epics.get(id);
+        historyManager.add(epic);
+        return epic;
     }
-
+    @Override
     public Subtask getSubTaskById(int id) {
-        return subtasks.get(id);
+        Subtask subtask = subtasks.get(id);
+        historyManager.add(subtask);
+        return subtask;
     }
 
     /**
      * получение множества подзадач эпика по id
      */
+    @Override
     public Set<Subtask> getSubTasksByEpicId(int id) {
         Set<Integer> subtasksId = epics.get(id).getSubTasks();
         Set<Subtask> result = new HashSet<>();
@@ -82,6 +102,7 @@ public class Manager {
     /**
      * удаление всез задач
      */
+    @Override
     public void deleteAllTasks() {
         tasks.clear();
         if(epics.isEmpty() && subtasks.isEmpty()){
@@ -89,6 +110,7 @@ public class Manager {
         }
     }
 
+    @Override
     public void deleteAllEpicTasks() {
         subtasks.clear();
         epics.clear();
@@ -97,6 +119,7 @@ public class Manager {
         }
     }
 
+    @Override
     public void deleteAllSubTasks() {
         for (Epic epic : epics.values()) {
             epic.clearSubTasks();
@@ -108,10 +131,12 @@ public class Manager {
     /**
      * удаление по id
      */
+    @Override
     public void deleteTaskById(int id) {
         tasks.remove(id);
     }
 
+    @Override
     public void deleteSubtaskById(int id) {
         int epicId = subtasks.get(id).getEpicId();
         subtasks.remove(id);
@@ -121,6 +146,7 @@ public class Manager {
     }
 
 
+    @Override
     public void deleteEpicById(int epicId) {
         for (Integer id : epics.get(epicId).getSubTasks()) {
             subtasks.remove(id);
@@ -131,14 +157,16 @@ public class Manager {
     /**
      * обновление задачи
      */
+    @Override
     public void updateTask(Task task) {
         tasks.put(task.getId(), task);
     }
 
+    @Override
     public void updateEpic(Epic newEpic) {
         epics.put(newEpic.getId(), newEpic);
     }
-
+    @Override
     public void updateSubtask(Subtask subtask) {
         subtasks.put(subtask.getId(), subtask);
         updateStatusEpic(epics.get(subtask.getEpicId()));
