@@ -47,7 +47,7 @@ public class Main {
 //        System.out.println(memoryManager.getSubtasks());
 
         System.out.println("\n---------Добавляем ещё задач и выводим историю---------");
-        memoryManager.createTask(new Task("Задача-3", "Описание задачис id 8", Status.NEW));
+        memoryManager.createTask(new Task("Задача-3", "Описание задачи с id 8", Status.NEW));
         memoryManager.createTask(new Task("Задача-4", "Описание задачи с id 9", Status.NEW));
         memoryManager.createEpicTask(new Epic("Эпик-3", "Описание эпика с id 10"));
         memoryManager.createEpicTask(new Epic("Эпик-4", "Описание эпика с id 11"));
@@ -68,7 +68,6 @@ public class Main {
         memoryManager.getTaskById(9);
         memoryManager.getEpicTaskById(10);
 //        memoryManager.getEpicTaskById(11);
-
 
         System.out.println(memoryManager.getHistory());
     }

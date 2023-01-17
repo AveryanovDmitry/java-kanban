@@ -10,58 +10,58 @@ public interface TaskManager {
     /**
      * Создание задачи
      */
-    public void createTask(Task task);
+    void createTask(Task task);
 
-    public void createEpicTask(Epic epic);
+    void createEpicTask(Epic epic);
 
-    public void createSubTask(Subtask task);
+    void createSubTask(Subtask task);
 
-    public List<Epic> getEpics();
+    List<Epic> getEpics();
 
-    public List<Subtask> getSubtasks();
+    List<Subtask> getSubtasks();
 
-    public List<Task> getTasks();
+    List<Task> getTasks();
 
     /**
      * получение по id
      */
-    public Task getTaskById(int id);
+    Task getTaskById(int id);
 
-    public Epic getEpicTaskById(int id);
+    Epic getEpicTaskById(int id);
 
-    public Subtask getSubTaskById(int id);
+    Subtask getSubTaskById(int id);
 
     /**
      * получение множества подзадач эпика по id
      */
-    public Set<Subtask> getSubTasksByEpicId(int id);
+    Set<Subtask> getSubTasksByEpicId(int id);
 
     /**
      * удаление всез задач
      */
-    public void deleteAllTasks();
+    void deleteAllTasks();
 
-    public void deleteAllEpicTasks();
+    void deleteAllEpicTasks();
 
-    public void deleteAllSubTasks();
+    void deleteAllSubTasks();
 
     /**
      * удаление по id
      */
-    public void deleteTaskById(int id);
+    void deleteTaskById(int id);
 
-    public void deleteSubtaskById(int id);
+    void deleteSubtaskById(int id);
 
-    public void deleteEpicById(int epicId);
+    void deleteEpicById(int epicId);
 
     /**
      * обновление задачи
      */
-    public void updateTask(Task task);
+    void updateTask(Task task);
 
-    public void updateEpic(Epic newEpic);
+    void updateEpic(Epic newEpic);
 
-    public void updateSubtask(Subtask subtask);
+    void updateSubtask(Subtask subtask);
 
     /**
      *  получение истории
