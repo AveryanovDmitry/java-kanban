@@ -1,4 +1,4 @@
-package com.praktikum.app.service;
+package com.praktikum.app.services;
 
 public class Managers {
 

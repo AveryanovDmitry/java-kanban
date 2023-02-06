@@ -1,4 +1,4 @@
-package com.praktikum.app.service;
+package com.praktikum.app.services;
 
 import com.praktikum.app.models.Epic;
 import com.praktikum.app.models.Subtask;

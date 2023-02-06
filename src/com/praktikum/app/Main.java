@@ -4,7 +4,7 @@ import com.praktikum.app.models.Epic;
 import com.praktikum.app.models.Subtask;
 import com.praktikum.app.models.Task;
 import com.praktikum.app.models.utils.Status;
-import com.praktikum.app.service.*;
+import com.praktikum.app.services.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -38,6 +38,18 @@ public class Main {
 
         memoryManager.deleteTaskById(1);
         memoryManager.deleteTaskById(3);
+
+        System.out.println(memoryManager.getHistory());
+
+        System.out.println("\n------------бращаемся по несущестующему индексу, удаляем всё --------------");
+        //обращаемся по несущестующему индексу
+        memoryManager.getEpicTaskById(3);
+        memoryManager.getTaskById(1);
+        memoryManager.getTaskById(999);
+
+        //удаляем всё
+        memoryManager.deleteAllTasks();
+        memoryManager.deleteAllEpicTasks();
 
         System.out.println(memoryManager.getHistory());
     }

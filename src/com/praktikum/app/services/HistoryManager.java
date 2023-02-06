@@ -1,8 +1,9 @@
-package com.praktikum.app.service;
+package com.praktikum.app.services;
 
 import com.praktikum.app.models.Task;
 
 import java.util.List;
+import java.util.Set;
 
 public interface HistoryManager {
 
@@ -11,5 +12,4 @@ public interface HistoryManager {
     List<Task>getHistory();
 
     void remove(int id);
-
 }
