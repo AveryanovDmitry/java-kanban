@@ -26,10 +26,6 @@ public class Epic extends Task{
         subTasks.clear();
     }
 
-    public void setSubTasks(Set<Integer> subTasks) {
-        this.subTasks = subTasks;
-    }
-
     @Override
     public String toString() {
         return "Epic{" +
