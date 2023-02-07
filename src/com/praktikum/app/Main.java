@@ -37,7 +37,7 @@ public class Main {
         System.out.println("\n------------Удаляем задачу и эпик с тремя подзадачами под индексом 1 и 3--------------");
 
         memoryManager.deleteTaskById(1);
-        memoryManager.deleteTaskById(3);
+        memoryManager.deleteEpicById(3);
 
         System.out.println(memoryManager.getHistory());
 
