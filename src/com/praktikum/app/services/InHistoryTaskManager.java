@@ -28,7 +28,7 @@ public class InHistoryTaskManager implements HistoryManager {
      */
     @Override
     public void add(Task task) {
-        if(task == null){
+        if (task == null) {
             return;
         }
         if (mapHistory.containsKey(task.getId())) {
@@ -48,19 +48,11 @@ public class InHistoryTaskManager implements HistoryManager {
         }
 
         if (node == firstNode) {
-            if (firstNode.next != null) {
-                firstNode = firstNode.next;
-            } else {
-                firstNode = null;
-            }
+            firstNode = firstNode.next;
         }
 
         if (node == lastNode) {
-            if (lastNode.previous != null) {
-                lastNode = lastNode.previous;
-            } else {
-                lastNode = null;
-            }
+            lastNode = lastNode.previous;
         }
 
         if (node.previous != null) {
