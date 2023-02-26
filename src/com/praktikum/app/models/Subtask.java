@@ -1,6 +1,7 @@
 package com.praktikum.app.models;
 
 import com.praktikum.app.models.utils.Status;
+import com.praktikum.app.models.utils.TypeTask;
 
 public class Subtask extends Task{
     private final int epicId;
@@ -9,11 +10,13 @@ public class Subtask extends Task{
        this.description = description;
        this.status = status;
        this.epicId = epicId;
+       this.type = TypeTask.SUB_TASK;
     }
 
     public Subtask(String name, String description, Status status, Integer epicId, int id) {
         super(name, description, status, id);
         this.epicId = epicId;
+        this.type = TypeTask.SUB_TASK;
     }
 
     public Integer getEpicId() {

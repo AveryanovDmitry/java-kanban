@@ -1,13 +1,14 @@
-package com.praktikum.app.services;
+package com.praktikum.app.services.inMemoryManager;
 
 import com.praktikum.app.models.Epic;
 import com.praktikum.app.models.Subtask;
 import com.praktikum.app.models.Task;
 import com.praktikum.app.models.utils.Status;
+import com.praktikum.app.services.Managers;
 
 import java.util.*;
 
-public class InMemoryTaskManager implements TaskManager{
+public class InMemoryTaskManager implements TaskManager {
 
     private final HistoryManager historyManager = Managers.getDefaultHistory();
     private final Map<Integer, Epic> epics = new HashMap<>();
@@ -22,6 +23,13 @@ public class InMemoryTaskManager implements TaskManager{
     @Override
     public List<Task> getHistory() {
         return historyManager.getHistory();
+    }
+
+    /**
+     * получение менеджера истории
+     */
+    public HistoryManager getHistoryManager() {
+        return historyManager;
     }
 
     /**

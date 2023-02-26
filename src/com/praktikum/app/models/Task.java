@@ -1,6 +1,7 @@
 package com.praktikum.app.models;
 
 import com.praktikum.app.models.utils.Status;
+import com.praktikum.app.models.utils.TypeTask;
 
 import java.util.Objects;
 
@@ -10,13 +11,16 @@ public class Task {
     protected String description;
     protected Status status;
 
+    protected TypeTask type;
+
     public Task() {
     }
 
-    public Task(String name, String description, Status status) {
+    public Task(String name, String description, Status status, TypeTask type) {
         this.name = name;
         this.description = description;
         this.status = status;
+        this.type = type;
     }
 
     public Task(String name, String description, Status status, int id) {
@@ -56,6 +60,10 @@ public class Task {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public TypeTask getType() {
+        return type;
     }
 
     @Override

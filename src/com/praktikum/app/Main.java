@@ -4,10 +4,16 @@ import com.praktikum.app.models.Epic;
 import com.praktikum.app.models.Subtask;
 import com.praktikum.app.models.Task;
 import com.praktikum.app.models.utils.Status;
-import com.praktikum.app.services.*;
+import com.praktikum.app.models.utils.TypeTask;
+import com.praktikum.app.services.Managers;
+import com.praktikum.app.services.inFileManager.FileBackendTasksManager;
+import com.praktikum.app.services.inMemoryManager.TaskManager;
+
+import java.io.File;
 
 public class Main {
     public static void main(String[] args) {
+
         TaskManager memoryManager = Managers.getDefault();
 
         /**
@@ -18,8 +24,8 @@ public class Main {
          * удалите эпик с тремя подзадачами и убедитесь, что из истории удалился как сам эпик, так и все его подзадачи.
          */
         System.out.println("\n------------Созадаём задачи--------------");
-        memoryManager.createTask(new Task("Задача-1", "Описание задачи с id 1", Status.NEW));
-        memoryManager.createTask(new Task("Задача-2", "Описание задачи с id 2", Status.NEW));
+        memoryManager.createTask(new Task("Задача-1", "Описание задачи с id 1", Status.NEW, TypeTask.TASK));
+        memoryManager.createTask(new Task("Задача-2", "Описание задачи с id 2", Status.NEW, TypeTask.TASK));
         memoryManager.createEpicTask(new Epic("Эпик-1", "Описание эпика с id 3"));
         memoryManager.createEpicTask(new Epic("Эпик-2", "Описание эпика с id 4"));
         memoryManager.createSubTask(new Subtask("Подзадача-1", "Описание подзадачи с id 5", Status.NEW, 3));
@@ -42,6 +48,7 @@ public class Main {
         System.out.println(memoryManager.getHistory());
 
         System.out.println("\n------------бращаемся по несущестующему индексу, удаляем всё --------------");
+
         //обращаемся по несущестующему индексу
         memoryManager.getEpicTaskById(3);
         memoryManager.getTaskById(1);

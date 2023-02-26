@@ -1,4 +1,4 @@
-package com.praktikum.app.services;
+package com.praktikum.app.services.inMemoryManager;
 
 import com.praktikum.app.models.Task;
 
