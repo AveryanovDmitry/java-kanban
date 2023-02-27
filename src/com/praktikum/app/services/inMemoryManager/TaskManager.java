@@ -10,11 +10,11 @@ public interface TaskManager {
     /**
      * Создание задачи
      */
-    void createTask(Task task);
+    void addTask(Task task);
 
-    void createEpicTask(Epic epic);
+    void addEpicTask(Epic epic);
 
-    void createSubTask(Subtask task);
+    void addSubTask(Subtask task);
 
     List<Epic> getEpics();
 

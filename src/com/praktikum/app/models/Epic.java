@@ -9,17 +9,18 @@ import java.util.Set;
 public class Epic extends Task{
     private final Set<Integer> subTasks = new HashSet<>();
     public Epic(String name, String description) {
-        super(name, description, Status.NEW, TypeTask.EPIC);
+        super(name, description, Status.NEW);
     }
     public Epic(String name, String description, int id) {
         super(name, description, Status.NEW, id);
-        this.type = TypeTask.EPIC;
     }
     public Epic(String name, String description, int id, Status status) {
         super(name, description, status, id);
-        this.type = TypeTask.EPIC;
     }
-
+    @Override
+    public TypeTask getType(){
+        return TypeTask.EPIC;
+    }
     public Set<Integer> getSubTasks() {
         return subTasks;
     }

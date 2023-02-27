@@ -10,12 +10,12 @@ import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
 
-    private final HistoryManager historyManager = Managers.getDefaultHistory();
-    private final Map<Integer, Epic> epics = new HashMap<>();
-    private final Map<Integer, Subtask> subtasks = new HashMap<>();
-    private final Map<Integer, Task> tasks = new HashMap<>();
+    protected final HistoryManager historyManager = Managers.getDefaultHistory();
+    protected final Map<Integer, Epic> epics = new HashMap<>();
+    protected final Map<Integer, Subtask> subtasks = new HashMap<>();
+    protected final Map<Integer, Task> tasks = new HashMap<>();
 
-    private int id = 1;
+    protected int id = 1;
 
     /**
      * получение истории
@@ -26,29 +26,22 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     /**
-     * получение менеджера истории
-     */
-    public HistoryManager getHistoryManager() {
-        return historyManager;
-    }
-
-    /**
      * Создание задачи
      */
     @Override
-    public void createTask(Task task) {
+    public void addTask(Task task) {
         task.setId(id);
         id++;
         tasks.put(task.getId(), task);
     }
     @Override
-    public void createEpicTask(Epic epic) {
+    public void addEpicTask(Epic epic) {
         epic.setId(id);
         id++;
         epics.put(epic.getId(), epic);
     }
     @Override
-    public void createSubTask(Subtask task) {
+    public void addSubTask(Subtask task) {
         task.setId(id);
         subtasks.put(id, task);
         Epic epic = epics.get(subtasks.get(id).getEpicId());
@@ -58,6 +51,15 @@ public class InMemoryTaskManager implements TaskManager {
         }
         id++;
     }
+    protected void addSubTaskForLoadFromFile(Subtask task) {
+        subtasks.put(id, task);
+        Epic epic = epics.get(subtasks.get(id).getEpicId());
+        if (epic != null) {
+            epic.addToSubTasks(id);
+            updateStatusEpic(epic);
+        }
+    }
+
     @Override
     public List<Epic> getEpics() {
         return List.copyOf(epics.values());
@@ -207,7 +209,7 @@ public class InMemoryTaskManager implements TaskManager {
     /**
      * метод обновления статуса для эпика
      */
-    private void updateStatusEpic(Epic epic) {
+    protected void updateStatusEpic(Epic epic) {
         if (epic.getSubTasks().isEmpty()) {
             epic.setStatus(Status.NEW);
             return;

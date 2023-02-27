@@ -24,13 +24,13 @@ public class Main {
          * удалите эпик с тремя подзадачами и убедитесь, что из истории удалился как сам эпик, так и все его подзадачи.
          */
         System.out.println("\n------------Созадаём задачи--------------");
-        memoryManager.createTask(new Task("Задача-1", "Описание задачи с id 1", Status.NEW, TypeTask.TASK));
-        memoryManager.createTask(new Task("Задача-2", "Описание задачи с id 2", Status.NEW, TypeTask.TASK));
-        memoryManager.createEpicTask(new Epic("Эпик-1", "Описание эпика с id 3"));
-        memoryManager.createEpicTask(new Epic("Эпик-2", "Описание эпика с id 4"));
-        memoryManager.createSubTask(new Subtask("Подзадача-1", "Описание подзадачи с id 5", Status.NEW, 3));
-        memoryManager.createSubTask(new Subtask("Подзадача-2", "Описание подзадачи с id 6", Status.NEW, 3));
-        memoryManager.createSubTask(new Subtask("Подзадача-3", "Описание подзадачи с id 7", Status.NEW, 3));
+        memoryManager.addTask(new Task("Задача-1", "Описание задачи с id 1", Status.NEW));
+        memoryManager.addTask(new Task("Задача-2", "Описание задачи с id 2", Status.NEW));
+        memoryManager.addEpicTask(new Epic("Эпик-1", "Описание эпика с id 3"));
+        memoryManager.addEpicTask(new Epic("Эпик-2", "Описание эпика с id 4"));
+        memoryManager.addSubTask(new Subtask("Подзадача-1", "Описание подзадачи с id 5", Status.NEW, 3));
+        memoryManager.addSubTask(new Subtask("Подзадача-2", "Описание подзадачи с id 6", Status.NEW, 3));
+        memoryManager.addSubTask(new Subtask("Подзадача-3", "Описание подзадачи с id 7", Status.NEW, 3));
 
         memoryManager.getTaskById(1);
         memoryManager.getEpicTaskById(4);

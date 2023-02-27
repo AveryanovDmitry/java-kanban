@@ -11,16 +11,13 @@ public class Task {
     protected String description;
     protected Status status;
 
-    protected TypeTask type;
-
     public Task() {
     }
 
-    public Task(String name, String description, Status status, TypeTask type) {
+    public Task(String name, String description, Status status) {
         this.name = name;
         this.description = description;
         this.status = status;
-        this.type = type;
     }
 
     public Task(String name, String description, Status status, int id) {
@@ -30,6 +27,9 @@ public class Task {
         this.id = id;
     }
 
+    public TypeTask getType(){
+        return TypeTask.TASK;
+    }
     public int getId() {
         return id;
     }
@@ -61,11 +61,6 @@ public class Task {
     public void setStatus(Status status) {
         this.status = status;
     }
-
-    public TypeTask getType() {
-        return type;
-    }
-
     @Override
     public boolean equals(Object obj) {
         if(this == obj)
