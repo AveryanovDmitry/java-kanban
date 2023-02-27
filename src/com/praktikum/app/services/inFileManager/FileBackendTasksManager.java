@@ -82,7 +82,6 @@ public class FileBackendTasksManager extends InMemoryTaskManager {
                             Epic epic = fileManager.epics.get(fileManager.subtasks.get(subId).getEpicId());
                             if (epic != null) {
                                 epic.addToSubTasks(subId);
-                                fileManager.updateStatusEpic(epic);
                             }
                             break;
                     }
@@ -92,12 +91,13 @@ public class FileBackendTasksManager extends InMemoryTaskManager {
             if (!content[content.length - 1].isEmpty()) {//проверяем наличие истории, после пустой строки
                 List<Integer> history = historyFromString(content[content.length - 1]);
                 for (Integer id : history) {
-                    if (fileManager.epics.get(id) != null) {
-                        fileManager.historyManager.add(fileManager.epics.get(id));
-                    } else if (fileManager.subtasks.get(id) != null) {
-                        fileManager.historyManager.add(fileManager.subtasks.get(id));
-                    } else if (fileManager.tasks.get(id) != null) {
-                        fileManager.historyManager.add(fileManager.tasks.get(id));
+                    Task task;
+                    if ((task = fileManager.epics.get(id)) != null) {
+                        fileManager.historyManager.add(task);
+                    } else if ((task = fileManager.subtasks.get(id)) != null) {
+                        fileManager.historyManager.add(task);
+                    } else if ((task = fileManager.tasks.get(id)) != null) {
+                        fileManager.historyManager.add(task);
                     }
                 }
             }
@@ -105,10 +105,6 @@ public class FileBackendTasksManager extends InMemoryTaskManager {
         } catch (IOException e) {
             throw new ManagerSaveException(e.getMessage());
         }
-    }
-
-    private void addSubtaskWithoutSave(Subtask subtask){
-        super.addSubTask(subtask);
     }
 
     /**
