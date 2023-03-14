@@ -67,4 +67,9 @@ public interface TaskManager {
      *  получение истории
      */
     List<Task>getHistory();
+
+    /**
+     *  получение осортированного по времени начала списка задач
+     */
+    List<Task> getPrioritizedTasks();
 }

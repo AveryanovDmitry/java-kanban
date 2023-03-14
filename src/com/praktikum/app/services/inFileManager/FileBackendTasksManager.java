@@ -14,6 +14,8 @@ import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -22,28 +24,28 @@ public class FileBackendTasksManager extends InMemoryTaskManager {
 
     public static void main(String[] args) {
         FileBackendTasksManager fileManager = new FileBackendTasksManager(new File("src/com/praktikum/app/services/inFileManager/test.csv"));
-        fileManager.addTask(new Task("Задача-1", "Описание задачи с id 1", Status.NEW));
-        fileManager.addTask(new Task("Задача-2", "Описание задачи с id 2", Status.NEW));
-        fileManager.addEpicTask(new Epic("Эпик-1", "Описание эпика с id 3"));
-        fileManager.addEpicTask(new Epic("Эпик-2", "Описание эпика с id 4"));
-        fileManager.addSubTask(new Subtask("Подзадача-1", "Описание подзадачи с id 5", Status.NEW, 3));
-        fileManager.addSubTask(new Subtask("Подзадача-2", "Описание подзадачи с id 6", Status.NEW, 3));
-        fileManager.addSubTask(new Subtask("Подзадача-3", "Описание подзадачи с id 7", Status.NEW, 3));
-        fileManager.getTaskById(1);
-        fileManager.getTaskById(2);
-        fileManager.getEpicTaskById(3);
+        fileManager.addTask(new Task("Задача-1", "Описание задачи с id 1", Status.NEW, LocalDateTime.now(), 30));
+        fileManager.addTask(new Task("Задача-2", "Описание задачи с id 2", Status.NEW, LocalDateTime.now().plusHours(1), 30));
+//        fileManager.addEpicTask(new Epic("Эпик-1", "Описание эпика с id 3"));
+//        fileManager.addEpicTask(new Epic("Эпик-2", "Описание эпика с id 4"));
+//        fileManager.addSubTask(new Subtask("Подзадача-1", "Описание подзадачи с id 5", Status.NEW, 3 , LocalDateTime.now().plusHours(2),23));
+//        fileManager.addSubTask(new Subtask("Подзадача-2", "Описание подзадачи с id 6", Status.NEW, 3));
+//        fileManager.addSubTask(new Subtask("Подзадача-3", "Описание подзадачи с id 7", Status.NEW, 3));
+//        fileManager.getTaskById(1);
+//        fileManager.getTaskById(2);
+//        fileManager.getEpicTaskById(3);
 
 
         FileBackendTasksManager fileManager1 = FileBackendTasksManager.loadFromFile(new File("src/com/praktikum/app/services/inFileManager/test.csv"));
         System.out.println("---- данные из нового файл менеджера --- ");
 
         System.out.println(fileManager1.getTasks());
-        System.out.println(fileManager1.getEpics());
-        System.out.println(fileManager1.getSubtasks());
-        System.out.println(fileManager1.getHistory());
+//        System.out.println(fileManager1.getEpics());
+//        System.out.println(fileManager1.getSubtasks());
+//        System.out.println(fileManager1.getHistory());
     }
 
-    private static final String TITLE_FOR_FILE = "id,type,name,status,description,epic\n";
+    private static final String TITLE_FOR_FILE = "id,type,name,status,description,epic,time_start,duration\n";
     private final File file;
 
     public FileBackendTasksManager(File file) {
@@ -61,12 +63,14 @@ public class FileBackendTasksManager extends InMemoryTaskManager {
                 return fileManager;
             String[] content = fileContent.split("\n");
 
+            int emptyLineFlag = 0;
             for (int i = 1; i < content.length; i++) {
                 if (content[i].isEmpty()) {
+                    emptyLineFlag = 1;
                     break; //встретили пустую строку в файле, задачи закончились
                 } else {
                     Task task = fileManager.fromString(content[i]);
-                    if(fileManager.id <= task.getId()){
+                    if (fileManager.id <= task.getId()) {
                         fileManager.id = task.getId() + 1; //получаем следующее за текущим максимальным id значение
                     }
                     switch (task.getType()) {
@@ -88,7 +92,7 @@ public class FileBackendTasksManager extends InMemoryTaskManager {
                 }
             }
 
-            if (!content[content.length - 1].isEmpty()) {//проверяем наличие истории, после пустой строки
+            if (!content[content.length - 1].isEmpty() && emptyLineFlag == 1) {//проверяем наличие истории, после пустой строки
                 List<Integer> history = historyFromString(content[content.length - 1]);
                 for (Integer id : history) {
                     Task task;
@@ -122,6 +126,20 @@ public class FileBackendTasksManager extends InMemoryTaskManager {
         return history;
     }
 
+    private LocalDateTime stringToLocalDate(String str) {
+        String[] date = str.split("\\.");
+        int day = Integer.parseInt(date[0]);
+        int month = Integer.parseInt(date[1]);
+        String[] dateTime = date[2].split(" ");
+        int year = Integer.parseInt(dateTime[0]);
+        String[] time = dateTime[1].split(":");
+        int hours = Integer.parseInt(time[0]);
+        int minutes = Integer.parseInt(time[1]);
+
+        return LocalDateTime.of(year, month, day, hours, minutes);
+    }
+
+
     /**
      * из строки в задачу
      */
@@ -131,6 +149,8 @@ public class FileBackendTasksManager extends InMemoryTaskManager {
         Status status;
         TypeTask type;
         int id;
+        LocalDateTime startTime = LocalDateTime.MAX;
+        int duration = 0;
 
         String[] arrStrTask = string.split(",");
 
@@ -139,18 +159,25 @@ public class FileBackendTasksManager extends InMemoryTaskManager {
         name = arrStrTask[2];
         status = Status.valueOf(arrStrTask[3]);
         description = arrStrTask[4];
+        if (!arrStrTask[6].equals("Время не указано")) {
+            startTime = stringToLocalDate(arrStrTask[6]);
+        }
+        if (!arrStrTask[7].equals("Продолжительность не указана")) {
+             String[] tmp = arrStrTask[7].split(" ");
+             duration = Integer.parseInt(tmp[0]);
+        }
 
         switch (type) {
             case TASK:
-                Task task = new Task(name, description, status);
+                Task task = new Task(name, description, status, startTime, duration);
                 task.setId(id);
                 return task;
             case EPIC:
-                Epic epic = new Epic(name, description, id, status);
+                Epic epic = new Epic(name, description, id, status, startTime, duration);
                 epic.setId(id);
                 return epic;
             case SUB_TASK:
-                Subtask subTask = new Subtask(name, description, status, Integer.parseInt(arrStrTask[5]), id);
+                Subtask subTask = new Subtask(name, description, status, Integer.parseInt(arrStrTask[5]), id, startTime, duration);
                 subTask.setId(id);
                 return subTask;
         }
@@ -189,13 +216,15 @@ public class FileBackendTasksManager extends InMemoryTaskManager {
             numberEpicFromSubTask = ((Subtask) task).getEpicId().toString();
         }
         return String.format(
-                "%s,%s,%s,%s,%s,%s\n",
+                "%s,%s,%s,%s,%s,%s,%s,%s\n",
                 task.getId(),
                 task.getType(),
                 task.getName(),
                 task.getStatus(),
                 task.getDescription(),
-                numberEpicFromSubTask
+                numberEpicFromSubTask,
+                task.timeToString(task.getStartTime()),
+                task.durationToString()
         );
     }
 
