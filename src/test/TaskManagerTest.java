@@ -1,5 +1,6 @@
 package test;
 
+import com.praktikum.app.exceptions.ManagerSaveException;
 import com.praktikum.app.models.Epic;
 import com.praktikum.app.models.Subtask;
 import com.praktikum.app.models.Task;
@@ -7,6 +8,7 @@ import com.praktikum.app.models.utils.Status;
 import com.praktikum.app.services.inMemoryManager.TaskManager;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -14,6 +16,19 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public abstract class TaskManagerTest<T extends TaskManager> {
     protected T manager;
+
+    @Test
+    public void timeValidation(){
+        manager.addTask(new Task("Задача-1", "Описание задачи с id 1", Status.NEW, LocalDateTime.now(), 40));
+        Task task1 = new Task("Задача-2", "Описание задачи с id 2", Status.NEW, LocalDateTime.now().plusMinutes(10), 20);
+
+        final ManagerSaveException exception = assertThrows(ManagerSaveException.class,
+                () -> manager.addTask(task1),
+                "Новая задача не входит внутрь существующей");
+
+        assertEquals( "Новая задача c id "+ task1.getId() + " пересекается с текущими задачами, пожалуйста, измените время в одной из задач",
+                exception.getMessage());
+    }
 
     /** Для расчёта статуса Epic.
      * Пустой список подзадач.*/
@@ -194,7 +209,6 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         manager.addEpicTask(epic);
         Subtask subtask =  new Subtask("Подзадача", "Описание подзадачи", Status.NEW, epic.getId());
         manager.addSubTask(subtask);
-        System.out.println(subtask.getId());
         manager.updateSubtask(new Subtask("Обновленная подзадача", "Описание обновлённй подзадачи", Status.IN_PROGRESS, epic.getId(), subtask.getId()));
 
         final Subtask savedSubtask = manager.getSubTaskById(subtask.getId());
@@ -268,10 +282,10 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     public void deleteAllSubtasksTest() {
         Epic epic = new Epic("Эпик", "Описание эпика");
         manager.addEpicTask(epic);
-        manager.addSubTask(new Subtask("Подзадача", "Описание подзадачи", Status.NEW, epic.getId()));
-        manager.addSubTask(new Subtask("Подзадача", "Описание подзадачи", Status.NEW, epic.getId()));
-        manager.addSubTask(new Subtask("Подзадача", "Описание подзадачи", Status.NEW, epic.getId()));
-        manager.addSubTask(new Subtask("Подзадача", "Описание подзадачи", Status.NEW, epic.getId()));
+        manager.addSubTask(new Subtask("Подзадача1", "Описание подзадачи", Status.NEW, epic.getId()));
+        manager.addSubTask(new Subtask("Подзадача2", "Описание подзадачи", Status.NEW, epic.getId()));
+        manager.addSubTask(new Subtask("Подзадача3", "Описание подзадачи", Status.NEW, epic.getId()));
+        manager.addSubTask(new Subtask("Подзадача4", "Описание подзадачи", Status.NEW, epic.getId()));
 
         manager.deleteAllSubTasks();
         assertTrue(manager.getSubtasks().isEmpty(),"Подзадачи не удалены.");

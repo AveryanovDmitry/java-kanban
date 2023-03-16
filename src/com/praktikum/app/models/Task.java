@@ -15,7 +15,7 @@ public class Task {
     protected String description;
     protected Status status;
     protected int duration;
-    protected LocalDateTime startTime = LocalDateTime.MAX;
+    protected LocalDateTime startTime;
 
     public Task() {
     }
@@ -51,6 +51,9 @@ public class Task {
     }
 
     public LocalDateTime getEndTime() {
+        if (startTime == null) {
+            return null;
+        }
         return startTime.plus(Duration.ofMinutes(duration));
     }
 
@@ -106,23 +109,8 @@ public class Task {
         this.status = status;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        Task tmp = (Task) obj;
-        return Objects.equals(name, tmp.getName()) &&
-                Objects.equals(description, tmp.getDescription());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, description);
-    }
-
     public String timeToString(LocalDateTime time) {
-        if (time == LocalDateTime.MAX) {
+        if (time == null) {
             return "Время не указано";
         }
         return time.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"));
@@ -145,5 +133,54 @@ public class Task {
                 ", Time Start=" + timeToString(startTime) +
                 ", Duration=" + durationToString() +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Task task = (Task) o;
+
+        return name.equals(task.getName())
+                && description.equals(task.getDescription())
+                && status == task.getStatus()
+                && duration == task.getDuration()
+                && checkTimeOnWatch(startTime, task.getStartTime());
+    }
+
+    protected boolean checkTimeOnWatch(LocalDateTime t1, LocalDateTime t2) {
+        if (t1 == null && t2 == null) {
+            return true;
+        } else if (t1 == null || t2 == null) {
+            return false;
+        } else if (Math.abs(t1.getMinute() - t2.getMinute()) <= 1 || Math.abs(t1.getMinute() - t2.getMinute()) == 59) {
+            return t1.format(DateTimeFormatter.ofPattern("dd.MM.yyyy, HH")).equals(
+                    t2.format(DateTimeFormatter.ofPattern("dd.MM.yyyy, HH")));
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 71;
+        if (name != null) {
+            hash = hash + name.hashCode();
+        }
+        hash = hash * 31;
+        if (description != null) {
+            hash = hash + description.hashCode();
+        }
+        if (status != null) {
+            hash = hash + status.hashCode();
+        }
+        hash = hash + duration;
+        if (startTime != null) {
+            hash = hash + startTime.hashCode();
+        }
+        return Math.abs(hash);
     }
 }

@@ -4,6 +4,7 @@ import com.praktikum.app.models.utils.Status;
 import com.praktikum.app.models.utils.TypeTask;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class Subtask extends Task{
     private final int epicId;
@@ -51,5 +52,26 @@ public class Subtask extends Task{
     @Override
     public TypeTask getType(){
         return TypeTask.SUB_TASK;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+        Subtask subtask = (Subtask) o;
+        return  id == subtask.getId()
+                && duration == subtask.getDuration()
+                && name.equals(subtask.getName())
+                && description.equals(subtask.getDescription())
+                && status == subtask.getStatus()
+                && epicId == subtask.getEpicId()
+                && checkTimeOnWatch(startTime, subtask.getStartTime());
     }
 }
