@@ -4,9 +4,7 @@ import com.praktikum.app.models.utils.Status;
 import com.praktikum.app.models.utils.TypeTask;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 public class Epic extends Task{
@@ -20,6 +18,10 @@ public class Epic extends Task{
     }
     public Epic(String name, String description, int id, Status status, LocalDateTime startTime, int duration) {
         super(name, description, status, startTime, duration, id);
+    }
+    public Epic(String name, String description, int id, Status status, LocalDateTime startTime, int duration, LocalDateTime endTime) {
+        super(name, description, status, startTime, duration, id);
+        this.endTime = endTime;
     }
 
     public void setEndTime(LocalDateTime endTime) {
@@ -75,7 +77,7 @@ public class Epic extends Task{
                 && name.equals(epic.name)
                 && description.equals(epic.description)
                 && status == epic.status
-                && checkTimeOnWatch(startTime, epic.getStartTime())
+                && equalsStartTime(epic.getStartTime())
                 && subTasks.equals(epic.getSubTasks());
     }
 }

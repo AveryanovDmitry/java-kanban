@@ -14,14 +14,13 @@ import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class FileBackendTasksManager extends InMemoryTaskManager {
-    private static final String TITLE_FOR_FILE = "id,type,name,status,description,epic,time_start,duration\n";
+    private static final String TITLE_FOR_FILE = "id,type,name,status,description,epic,time_start,duration,end_time\n";
     private final File file;
 
     public FileBackendTasksManager(File file) {
@@ -52,7 +51,7 @@ public class FileBackendTasksManager extends InMemoryTaskManager {
                     switch (task.getType()) {
                         case TASK:
                             fileManager.tasks.put(task.getId(), task);
-                            fileManager.addPrioritizedTask(task);
+                            fileManager.prioritizedTasks.add(task);
                             break;
                         case EPIC:
                             fileManager.epics.put(task.getId(), (Epic) task);
@@ -63,7 +62,7 @@ public class FileBackendTasksManager extends InMemoryTaskManager {
                             Epic epic = fileManager.epics.get(fileManager.subtasks.get(subId).getEpicId());
                             if (epic != null) {
                                 epic.addToSubTasks(subId);
-                                fileManager.addPrioritizedTask(task);
+                                fileManager.prioritizedTasks.add(task);
                                 if (task.getStartTime() != null) {
                                     fileManager.updateTimeEpic(epic);
                                 }
@@ -132,6 +131,7 @@ public class FileBackendTasksManager extends InMemoryTaskManager {
         int id;
         LocalDateTime startTime = null;
         int duration = 0;
+        LocalDateTime endTime = null;
 
         String[] arrStrTask = string.split(",");
 
@@ -144,8 +144,11 @@ public class FileBackendTasksManager extends InMemoryTaskManager {
             startTime = stringToLocalDate(arrStrTask[6]);
         }
         if (!arrStrTask[7].equals("Продолжительность не указана")) {
-             String[] tmp = arrStrTask[7].split(" ");
-             duration = Integer.parseInt(tmp[0]);
+            String[] tmp = arrStrTask[7].split(" ");
+            duration = Integer.parseInt(tmp[0]);
+        }
+        if (!arrStrTask[8].equals("Время не указано")) {
+            endTime = stringToLocalDate(arrStrTask[8]);
         }
 
         switch (type) {
@@ -154,7 +157,7 @@ public class FileBackendTasksManager extends InMemoryTaskManager {
                 task.setId(id);
                 return task;
             case EPIC:
-                Epic epic = new Epic(name, description, id, status, startTime, duration);
+                Epic epic = new Epic(name, description, id, status, startTime, duration, endTime);
                 epic.setId(id);
                 return epic;
             case SUB_TASK:
@@ -197,7 +200,7 @@ public class FileBackendTasksManager extends InMemoryTaskManager {
             numberEpicFromSubTask = ((Subtask) task).getEpicId().toString();
         }
         return String.format(
-                "%s,%s,%s,%s,%s,%s,%s,%s\n",
+                "%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
                 task.getId(),
                 task.getType(),
                 task.getName(),
@@ -205,8 +208,8 @@ public class FileBackendTasksManager extends InMemoryTaskManager {
                 task.getDescription(),
                 numberEpicFromSubTask,
                 task.timeToString(task.getStartTime()),
-                task.durationToString()
-        );
+                task.durationToString(),
+                task.timeToString(task.getEndTime()));
     }
 
     /**

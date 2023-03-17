@@ -4,7 +4,6 @@ import com.praktikum.app.models.utils.Status;
 import com.praktikum.app.models.utils.TypeTask;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 public class Subtask extends Task{
     private final int epicId;
@@ -72,6 +71,6 @@ public class Subtask extends Task{
                 && description.equals(subtask.getDescription())
                 && status == subtask.getStatus()
                 && epicId == subtask.getEpicId()
-                && checkTimeOnWatch(startTime, subtask.getStartTime());
+                && equalsStartTime(subtask.getStartTime());
     }
 }

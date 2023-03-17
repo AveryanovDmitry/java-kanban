@@ -149,17 +149,17 @@ public class Task {
                 && description.equals(task.getDescription())
                 && status == task.getStatus()
                 && duration == task.getDuration()
-                && checkTimeOnWatch(startTime, task.getStartTime());
+                && equalsStartTime(task.getStartTime());
     }
 
-    protected boolean checkTimeOnWatch(LocalDateTime t1, LocalDateTime t2) {
-        if (t1 == null && t2 == null) {
+    protected boolean equalsStartTime(LocalDateTime checkTime) {
+        if (startTime == null && checkTime == null) {
             return true;
-        } else if (t1 == null || t2 == null) {
+        } else if (startTime == null || checkTime == null) {
             return false;
-        } else if (Math.abs(t1.getMinute() - t2.getMinute()) <= 1 || Math.abs(t1.getMinute() - t2.getMinute()) == 59) {
-            return t1.format(DateTimeFormatter.ofPattern("dd.MM.yyyy, HH")).equals(
-                    t2.format(DateTimeFormatter.ofPattern("dd.MM.yyyy, HH")));
+        } else if (Math.abs(startTime.getMinute() - checkTime.getMinute()) <= 1 || Math.abs(startTime.getMinute() - checkTime.getMinute()) == 59) {
+            return startTime.format(DateTimeFormatter.ofPattern("dd.MM.yyyy, HH")).equals(
+                    checkTime.format(DateTimeFormatter.ofPattern("dd.MM.yyyy, HH")));
         }
         return false;
     }
