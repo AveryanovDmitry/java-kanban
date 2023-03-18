@@ -107,18 +107,22 @@ public class FileBackendTasksManager extends InMemoryTaskManager {
     }
 
     private LocalDateTime stringToLocalDate(String str) {
+        if("Время не указано".equals(str)) {
+            return null;
+        }
         String[] date = str.split("\\.");
         int day = Integer.parseInt(date[0]);
         int month = Integer.parseInt(date[1]);
+
         String[] dateTime = date[2].split(" ");
         int year = Integer.parseInt(dateTime[0]);
+
         String[] time = dateTime[1].split(":");
         int hours = Integer.parseInt(time[0]);
         int minutes = Integer.parseInt(time[1]);
 
         return LocalDateTime.of(year, month, day, hours, minutes);
     }
-
 
     /**
      * из строки в задачу
@@ -129,9 +133,9 @@ public class FileBackendTasksManager extends InMemoryTaskManager {
         Status status;
         TypeTask type;
         int id;
-        LocalDateTime startTime = null;
+        LocalDateTime startTime;
         int duration = 0;
-        LocalDateTime endTime = null;
+        LocalDateTime endTime;
 
         String[] arrStrTask = string.split(",");
 
@@ -140,16 +144,13 @@ public class FileBackendTasksManager extends InMemoryTaskManager {
         name = arrStrTask[2];
         status = Status.valueOf(arrStrTask[3]);
         description = arrStrTask[4];
-        if (!arrStrTask[6].equals("Время не указано")) {
-            startTime = stringToLocalDate(arrStrTask[6]);
-        }
+        startTime = stringToLocalDate(arrStrTask[6]);
         if (!arrStrTask[7].equals("Продолжительность не указана")) {
             String[] tmp = arrStrTask[7].split(" ");
             duration = Integer.parseInt(tmp[0]);
         }
-        if (!arrStrTask[8].equals("Время не указано")) {
-            endTime = stringToLocalDate(arrStrTask[8]);
-        }
+        endTime = stringToLocalDate(arrStrTask[8]);
+
 
         switch (type) {
             case TASK:

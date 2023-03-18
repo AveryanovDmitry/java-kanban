@@ -8,7 +8,6 @@ import com.praktikum.app.models.utils.Status;
 import com.praktikum.app.services.Managers;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
@@ -293,33 +292,22 @@ public class InMemoryTaskManager implements TaskManager {
     protected void updateTimeEpic(Epic epic) {
         Set<Subtask> subT = getSubTasksByEpicId(epic.getId());
         if (!subT.isEmpty()) {
-            LocalDateTime startTime = LocalDateTime.MAX;
-            LocalDateTime endTime = LocalDateTime.MIN;
+            LocalDateTime startTime = null;
+            LocalDateTime endTime = null;
+            int duration = 0;
             for (Subtask subtask : subT) {
                 if (subtask.getStartTime() != null) {
-                    if (subtask.getStartTime().isBefore(startTime)) {
+                    if (startTime == null || subtask.getStartTime().isBefore(startTime)) {
                         startTime = subtask.getStartTime();
-                    }
-                    if (subtask.getEndTime().isAfter(endTime)) {
+                    } else if (endTime == null || subtask.getEndTime().isAfter(endTime)) {
                         endTime = subtask.getEndTime();
                     }
                 }
+                duration += subtask.getDuration();
             }
-            if (startTime != LocalDateTime.MAX) {
-                epic.setStartTime(startTime);
-            }
-            if (endTime != LocalDateTime.MIN) {
-                epic.setEndTime(endTime);
-            }
-            int duration = 0;
-            for (Integer i : epic.getSubTasks()) {
-                duration += subtasks.get(i).getDuration();
-            }
+            epic.setStartTime(startTime);
+            epic.setEndTime(endTime);
             epic.setDuration(duration);
-        } else {
-            epic.setStartTime(null);
-            epic.setDuration(0);
-            epic.setEndTime(null);
         }
     }
 
@@ -328,9 +316,10 @@ public class InMemoryTaskManager implements TaskManager {
      */
     private boolean doesTimeOverlap(Task task) {
         for (Task check : prioritizedTasks) {
-            if (check.getStartTime() == null ||
-                    ((task.getStartTime().isAfter(check.getEndTime()) || task.getStartTime().equals(check.getEndTime())) ||
-                    (task.getEndTime().isBefore(check.getStartTime()) || task.getEndTime().equals(check.getStartTime())))) {
+            if (check.getStartTime() == null) {
+                break;
+            }
+            if (!task.getStartTime().isBefore(check.getEndTime()) || !task.getEndTime().isAfter(check.getStartTime())) {
                 continue;
             }
             return true;
