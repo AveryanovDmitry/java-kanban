@@ -291,24 +291,22 @@ public class InMemoryTaskManager implements TaskManager {
      */
     protected void updateTimeEpic(Epic epic) {
         Set<Subtask> subT = getSubTasksByEpicId(epic.getId());
-        if (!subT.isEmpty()) {
-            LocalDateTime startTime = null;
-            LocalDateTime endTime = null;
-            int duration = 0;
-            for (Subtask subtask : subT) {
-                if (subtask.getStartTime() != null) {
-                    if (startTime == null || subtask.getStartTime().isBefore(startTime)) {
-                        startTime = subtask.getStartTime();
-                    } else if (endTime == null || subtask.getEndTime().isAfter(endTime)) {
-                        endTime = subtask.getEndTime();
-                    }
+        LocalDateTime startTime = null;
+        LocalDateTime endTime = null;
+        int duration = 0;
+        for (Subtask subtask : subT) {
+            if (subtask.getStartTime() != null) {
+                if (startTime == null || subtask.getStartTime().isBefore(startTime)) {
+                    startTime = subtask.getStartTime();
+                } else if (endTime == null || subtask.getEndTime().isAfter(endTime)) {
+                    endTime = subtask.getEndTime();
                 }
-                duration += subtask.getDuration();
             }
-            epic.setStartTime(startTime);
-            epic.setEndTime(endTime);
-            epic.setDuration(duration);
+            duration += subtask.getDuration();
         }
+        epic.setStartTime(startTime);
+        epic.setEndTime(endTime);
+        epic.setDuration(duration);
     }
 
     /**
