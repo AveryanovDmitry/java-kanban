@@ -26,7 +26,6 @@ public class FileBackendTasksManager extends InMemoryTaskManager {
     public FileBackendTasksManager(File file) {
         this.file = file;
     }
-
     /**
      * восстанавливаем данные менеджера из файла при запуске программы
      */
@@ -172,7 +171,7 @@ public class FileBackendTasksManager extends InMemoryTaskManager {
     /**
      * сохраняем текущее состояние менеджера в указанный файл
      */
-    private void save() {
+    protected void save() {
         try (Writer writer = new FileWriter(file)) {
             writer.write(TITLE_FOR_FILE);
             List<Task> tasks = super.getTasks();
