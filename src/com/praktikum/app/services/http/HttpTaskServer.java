@@ -1,6 +1,7 @@
 package com.praktikum.app.services.http;
 
 import com.praktikum.app.services.Managers;
+import com.praktikum.app.services.inMemoryManager.TaskManager;
 import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
@@ -9,10 +10,9 @@ import java.net.InetSocketAddress;
 public class HttpTaskServer {
     public static final int PORT = 8080;
     private final HttpServer server;
-    private final HttpTaskManager httpTaskManager;
+    private final TaskManager httpTaskManager;
     public HttpTaskServer() throws IOException {
         this.httpTaskManager = Managers.getDefault("http://localhost:8078/");
-        this.httpTaskManager.load();
         this.server = HttpServer.create(new InetSocketAddress(PORT), 0);
         this.server.createContext("/tasks", new Handler(httpTaskManager));
     }
@@ -27,7 +27,7 @@ public class HttpTaskServer {
         System.out.println("Остановили сервер на порту" + PORT);
     }
 
-    public HttpTaskManager getHttpTaskManager() {
+    public TaskManager getHttpTaskManager() {
         return httpTaskManager;
     }
 }

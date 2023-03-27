@@ -9,7 +9,7 @@ import java.time.format.DateTimeFormatter;
 
 
 public class Task {
-    protected int id;
+    protected Integer id;
     protected String name;
     protected String description;
     protected Status status;
@@ -76,7 +76,7 @@ public class Task {
         return TypeTask.TASK;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 

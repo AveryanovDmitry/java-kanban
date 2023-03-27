@@ -6,12 +6,13 @@ import com.praktikum.app.models.Epic;
 import com.praktikum.app.models.Subtask;
 import com.praktikum.app.models.Task;
 import com.praktikum.app.services.http.utils.LocalDateTimeAdapter;
+import com.praktikum.app.services.inMemoryManager.TaskManager;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -22,10 +23,10 @@ public class Handler implements HttpHandler {
     private static final int LENGTH_WITHOUT_QUERY = 2;
     private static final int INDEX_WITHOUT_QUERY = 1;
     private static final int INDEX_FOR_PARSE_ID_FROM_SUBSTRING = 3;
-    private final HttpTaskManager httpTaskManager;
+    private final TaskManager httpTaskManager;
     private final Gson gson;
 
-    public Handler(HttpTaskManager httpTaskManager) {
+    public Handler(TaskManager httpTaskManager) {
         this.httpTaskManager = httpTaskManager;
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter());
@@ -69,6 +70,10 @@ public class Handler implements HttpHandler {
         }
     }
 
+    private String readBody(HttpExchange h) throws IOException {
+        return new String(h.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
+    }
+
     private void handleTasks(HttpExchange exchange) throws IOException {
         String requestMethod = exchange.getRequestMethod();
         String query = exchange.getRequestURI().getQuery();
@@ -88,9 +93,13 @@ public class Handler implements HttpHandler {
             }
             case "POST": {
                 try {
-                    String body = new String(exchange.getRequestBody().readAllBytes());
+                    String body = readBody(exchange);
+                    if (body.isEmpty()) {
+                        exchange.sendResponseHeaders(400, 0);
+                        return;
+                    }
                     Task task = gson.fromJson(body, Task.class);
-                    if (httpTaskManager.getTasks().contains(task)) {
+                    if (task.getId() != null) {
                         httpTaskManager.updateTask(task);
                         exchange.sendResponseHeaders(200, 0);
                     } else {
@@ -136,10 +145,13 @@ public class Handler implements HttpHandler {
             }
             case "POST": {
                 try {
-                    InputStream inputStream = exchange.getRequestBody();
-                    String body = new String(inputStream.readAllBytes());
+                    String body = readBody(exchange);
+                    if (body.isEmpty()) {
+                        exchange.sendResponseHeaders(400, 0);
+                        return;
+                    }
                     Epic epic = gson.fromJson(body, Epic.class);
-                    if (httpTaskManager.getEpics().contains(epic)) {
+                    if (epic.getId() != null) {
                         httpTaskManager.updateEpic(epic);
                         exchange.sendResponseHeaders(200, 0);
                     } else {
@@ -190,10 +202,13 @@ public class Handler implements HttpHandler {
             }
             case "POST": {
                 try {
-                    InputStream inputStream = exchange.getRequestBody();
-                    String body = new String(inputStream.readAllBytes());
+                    String body = readBody(exchange);
+                    if (body.isEmpty()) {
+                        exchange.sendResponseHeaders(400, 0);
+                        return;
+                    }
                     Subtask subtask = gson.fromJson(body, Subtask.class);
-                    if (httpTaskManager.getSubtasks().contains(subtask)) {
+                    if (subtask.getId() != null) {
                         httpTaskManager.updateSubtask(subtask);
                         exchange.sendResponseHeaders(200, 0);
                     } else {

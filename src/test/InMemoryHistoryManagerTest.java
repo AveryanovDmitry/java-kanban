@@ -30,8 +30,9 @@ public class InMemoryHistoryManagerTest {
 
     @Test
     void removeTest() {
-        Task task = new Task("Задача", "Описание задачи", Status.NEW);
+        Task task = new Task("Задача", "Описание задачи", Status.NEW, 100);
         manager.add(task);
+        System.out.println(manager.getHistory());
         manager.remove(task.getId());
         assertTrue(manager.getHistory().isEmpty(), "История не пустая.");
     }

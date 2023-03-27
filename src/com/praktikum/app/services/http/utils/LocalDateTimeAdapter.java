@@ -10,18 +10,24 @@ import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class LocalDateTimeAdapter extends TypeAdapter<LocalDateTime> {
-    private final String timeDatePattern = "dd.MM.yyyy HH:mm";
+    private static final String DATE_TIME_PATTERN = "dd.MM.yyyy HH:mm";
 
     public LocalDateTimeAdapter() {
     }
 
     public void write(JsonWriter jsonWriter, LocalDateTime localDateTime) throws IOException {
-        LocalDateTime value;
-        value = Objects.requireNonNullElseGet(localDateTime, LocalDateTime::now);
-        jsonWriter.value(value.format(DateTimeFormatter.ofPattern(this.timeDatePattern)));
+        if (localDateTime == null) {
+            jsonWriter.nullValue();
+        } else {
+            jsonWriter.value(localDateTime.format(DateTimeFormatter.ofPattern(DATE_TIME_PATTERN)));
+        }
     }
 
     public LocalDateTime read(JsonReader jsonReader) throws IOException {
-        return LocalDateTime.parse(jsonReader.nextString(), DateTimeFormatter.ofPattern(this.timeDatePattern));
+        String strFromJson = jsonReader.nextString();
+        if (Objects.equals(strFromJson, "null")) {
+            return null;
+        }
+        return LocalDateTime.parse(strFromJson, DateTimeFormatter.ofPattern(DATE_TIME_PATTERN));
     }
 }

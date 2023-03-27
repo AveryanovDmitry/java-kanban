@@ -17,6 +17,10 @@ public class Managers {
         String defaultUri = "http://localhost:8078/";
         return new HttpTaskManager(defaultUri);
     }
+
+    public static HttpTaskManager getDefault(String uri, boolean isNeedLoad) {
+        return new HttpTaskManager(uri, isNeedLoad);
+    }
     public static HttpTaskManager getDefault(String uri) {
         return new HttpTaskManager(uri);
     }

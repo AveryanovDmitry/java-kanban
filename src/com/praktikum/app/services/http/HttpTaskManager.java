@@ -5,27 +5,36 @@ import com.google.gson.reflect.TypeToken;
 import com.praktikum.app.models.*;
 import com.praktikum.app.services.Managers;
 import com.praktikum.app.services.inFileManager.FileBackendTasksManager;
-import com.praktikum.app.services.inMemoryManager.InHistoryTaskManager;
 
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class HttpTaskManager extends FileBackendTasksManager {
+    private static final String TASKS = "tasks";
+    private static final String SUB_TASKS = "subtasks";
+    private static final String EPICS = "epics";
+    private static final String HISTORY = "history";
     private final Gson gson;
     private final KVTaskClient client;
-    InHistoryTaskManager inHistoryTaskManager;
 
     public HttpTaskManager(String uri) {
-        super(null);
-        this.gson = Managers.buildGsonWithLocalDateTimeAdapter();
-        this.client = new KVTaskClient(uri);
-        this.inHistoryTaskManager = new InHistoryTaskManager();
+        this(uri, false);
     }
 
-    public void load() {
-        Type tasksType = new TypeToken<List<Task>>() {
-        }.getType();
-        List<Task> tasks = gson.fromJson(client.load("tasks"), tasksType);
+    public HttpTaskManager(String uri, boolean isNeedLoad) {
+        super(null);
+        gson = Managers.buildGsonWithLocalDateTimeAdapter();
+        client = new KVTaskClient(uri);
+        if(isNeedLoad){
+            load();
+        }
+    }
+
+
+    private void load() {
+        Type tasksType = new TypeToken<List<Task>>(){}.getType();
+        List<Task> tasks = gson.fromJson(client.load(TASKS), tasksType);
         if (tasks != null) {
             for (Task task : tasks) {
                 int id = task.getId();
@@ -37,9 +46,8 @@ public class HttpTaskManager extends FileBackendTasksManager {
             }
         }
 
-        Type subtasksType = new TypeToken<List<Subtask>>() {
-        }.getType();
-        List<Subtask> subtasks = gson.fromJson(client.load("subtasks"), subtasksType);
+        Type subtasksType = new TypeToken<List<Subtask>>(){}.getType();
+        List<Subtask> subtasks = gson.fromJson(client.load(SUB_TASKS), subtasksType);
         if (subtasks != null) {
             for (Subtask subtask: subtasks){
                 int id = subtask.getId();
@@ -52,12 +60,11 @@ public class HttpTaskManager extends FileBackendTasksManager {
         }
 
         Type epicsType = new TypeToken<List<Epic>>(){}.getType();
-        List<Epic> epics = gson.fromJson(client.load("epics"), epicsType);
+        List<Epic> epics = gson.fromJson(client.load(EPICS), epicsType);
         if (epics != null) {
             for (Epic epic: epics){
                 int id = epic.getId();
                 this.epics.put(id, epic);
-                this.prioritizedTasks.add(epic);
                 if (id > this.id) {
                     this.id = id;
                 }
@@ -65,24 +72,24 @@ public class HttpTaskManager extends FileBackendTasksManager {
         }
 
         Type historyType = new TypeToken<List<Task>>(){}.getType();
-        List<Task> history = gson.fromJson(client.load("history"), historyType);
+        List<Task> history = gson.fromJson(client.load(HISTORY), historyType);
         if (history != null) {
             for (Task task : history) {
-                inHistoryTaskManager.add(this.findTask(task.getId()));
+                getHistory().add(this.findTask(task.getId()));
             }
         }
     }
 
     @Override
-    public void save() {
+    protected void save() {
         String jsonTasks = gson.toJson(getTasks());
-        client.put("tasks", jsonTasks);
+        client.put(TASKS, jsonTasks);
         String jsonEpics = gson.toJson(getEpics());
-        client.put("epics", jsonEpics);
+        client.put(EPICS, jsonEpics);
         String jsonSubTask = gson.toJson(getSubtasks());
-        client.put("subtasks", jsonSubTask);
-        String jsonHistoryView = gson.toJson(getHistory());
-        client.put("history", jsonHistoryView);
+        client.put(SUB_TASKS, jsonSubTask);
+        String jsonHistoryView = gson.toJson(getHistory().stream().map(Task::getId).collect(Collectors.toList()));
+        client.put(HISTORY, jsonHistoryView);
     }
 
     protected Task findTask(Integer id) {
