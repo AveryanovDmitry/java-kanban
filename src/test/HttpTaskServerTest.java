@@ -8,7 +8,7 @@ import com.praktikum.app.models.Task;
 import com.praktikum.app.models.utils.Status;
 import com.praktikum.app.services.Managers;
 import com.praktikum.app.services.http.HttpTaskServer;
-import com.praktikum.app.services.http.KVServer;
+import com.praktikum.app.services.inMemoryManager.InMemoryTaskManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,15 +26,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class HttpTaskServerTest {
-    KVServer kvServerTest;
     HttpTaskServer httpServerTest;
     Gson gson = Managers.buildGsonWithLocalDateTimeAdapter();
 
     @BeforeEach
     public void beforeEach() throws IOException, InterruptedException {
-        kvServerTest = new KVServer();
-        kvServerTest.start();
-        httpServerTest = new HttpTaskServer();
+        httpServerTest = new HttpTaskServer(new InMemoryTaskManager());
         httpServerTest.start();
 
         Epic epic = new Epic("Эпик-1", "Описание эпика с id 1");
@@ -76,7 +73,6 @@ public class HttpTaskServerTest {
     @AfterEach
     void stopHttpTaskManagerTest() {
         httpServerTest.stop();
-        kvServerTest.stop();
     }
 
     @Test

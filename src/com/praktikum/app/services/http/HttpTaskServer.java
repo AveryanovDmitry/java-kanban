@@ -10,11 +10,16 @@ import java.net.InetSocketAddress;
 public class HttpTaskServer {
     public static final int PORT = 8080;
     private final HttpServer server;
-    private final TaskManager httpTaskManager;
+    private final TaskManager taskManager;
+
     public HttpTaskServer() throws IOException {
-        this.httpTaskManager = Managers.getDefault("http://localhost:8078/");
+        this(Managers.getDefault());
+    }
+
+    public HttpTaskServer(TaskManager httpTaskManager) throws IOException {
+        this.taskManager = httpTaskManager;
         this.server = HttpServer.create(new InetSocketAddress(PORT), 0);
-        this.server.createContext("/tasks", new Handler(httpTaskManager));
+        this.server.createContext("/tasks", new Handler(taskManager));
     }
 
     public void start() {
@@ -27,7 +32,7 @@ public class HttpTaskServer {
         System.out.println("Остановили сервер на порту" + PORT);
     }
 
-    public TaskManager getHttpTaskManager() {
-        return httpTaskManager;
+    public TaskManager getTaskManager() {
+        return taskManager;
     }
 }

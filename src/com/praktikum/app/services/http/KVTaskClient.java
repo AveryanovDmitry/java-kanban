@@ -15,6 +15,7 @@ import java.nio.charset.StandardCharsets;
 
 public class KVTaskClient {
     private static final String MESSAGE_FOR_REGISTER = "Ошибка в методе register, класса KVTaskClien";
+    private static final String MESSAGE_FOR_CONNECT = "Убедитесь что запущен KVServer к которому пытается обратиться клиент";
     private static final String MESSAGE_FOR_PUT = "Ошибка в методе put, класса KVTaskClien";
     private static final String MESSAGE_FOR_LOAD = "Ошибка в методе load класса KVTaskClient";
     private final String apiToken;
@@ -22,10 +23,10 @@ public class KVTaskClient {
 
     public KVTaskClient(String url) {
         this.url = url;
-        this.apiToken = this.register(url);
+        this.apiToken = this.register();
     }
 
-    public String register(String url) {
+    private String register() {
         try {
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder()
@@ -35,10 +36,12 @@ public class KVTaskClient {
                     .build();
             HttpResponse.BodyHandler<String> handler = HttpResponse.BodyHandlers.ofString();
             HttpResponse<String> response = client.send(request, handler);
-            if(response.statusCode() != 200){
+            if (response.statusCode() != 200) {
                 throw new KVTaskClientException(MESSAGE_FOR_REGISTER, new ConnectException());
             }
             return response.body();
+        } catch (ConnectException e) {
+            throw new KVTaskClientException(MESSAGE_FOR_CONNECT, e);
         } catch (IOException | InterruptedException e) {
             throw new KVTaskClientException(MESSAGE_FOR_REGISTER, e);
         }
@@ -51,10 +54,10 @@ public class KVTaskClient {
         try {
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder().POST(BodyPublishers.ofString(json))
-                    .uri(URI.create(this.url + "save/" + key + "?API_TOKEN=" + this.apiToken))
+                    .uri(URI.create(url + "save/" + key + "?API_TOKEN=" + apiToken))
                     .header("Content-Type", "application/json").build();
             HttpResponse<String> response = client.send(request, BodyHandlers.ofString(StandardCharsets.UTF_8));
-            if(response.statusCode() != 200){
+            if (response.statusCode() != 200) {
                 throw new KVTaskClientException(MESSAGE_FOR_PUT, new ConnectException());
             }
         } catch (InterruptedException | IOException e) {
@@ -69,10 +72,10 @@ public class KVTaskClient {
         try {
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder().GET()
-                    .uri(URI.create(this.url + "load/" + key + "?API_TOKEN=" + this.apiToken))
+                    .uri(URI.create(url + "load/" + key + "?API_TOKEN=" + apiToken))
                     .header("Content-Type", "application/json").build();
             HttpResponse<String> response = client.send(request, BodyHandlers.ofString(StandardCharsets.UTF_8));
-            if(response.statusCode() != 200){
+            if (response.statusCode() != 200) {
                 throw new KVTaskClientException(MESSAGE_FOR_LOAD, new ConnectException());
             }
             return response.body();

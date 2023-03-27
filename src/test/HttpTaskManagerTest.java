@@ -1,16 +1,12 @@
 package test;
 
-import com.google.gson.Gson;
-
 import com.praktikum.app.models.Epic;
 import com.praktikum.app.models.Subtask;
 import com.praktikum.app.models.Task;
 import com.praktikum.app.models.utils.Status;
 import com.praktikum.app.services.Managers;
 import com.praktikum.app.services.http.HttpTaskManager;
-import com.praktikum.app.services.http.HttpTaskServer;
 import com.praktikum.app.services.http.KVServer;
-import com.praktikum.app.services.inMemoryManager.InMemoryTaskManager;
 import com.praktikum.app.services.inMemoryManager.TaskManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class HttpTaskManagerTest extends TaskManagerTest<HttpTaskManager>{
     KVServer kvServerTest;
     @BeforeEach
-    public void beforeEach() throws IOException, InterruptedException {
+    public void beforeEach() throws IOException {
         kvServerTest = new KVServer();
         kvServerTest.start();
         manager = new HttpTaskManager("http://localhost:8078/", false);

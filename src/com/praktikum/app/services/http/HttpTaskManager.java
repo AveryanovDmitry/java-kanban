@@ -31,7 +31,6 @@ public class HttpTaskManager extends FileBackendTasksManager {
         }
     }
 
-
     private void load() {
         Type tasksType = new TypeToken<List<Task>>(){}.getType();
         List<Task> tasks = gson.fromJson(client.load(TASKS), tasksType);
@@ -40,9 +39,7 @@ public class HttpTaskManager extends FileBackendTasksManager {
                 int id = task.getId();
                 this.tasks.put(id, task);
                 this.prioritizedTasks.add(task);
-                if (id > this.id) {
-                    this.id = id;
-                }
+                checkLastIdForCounter(id);
             }
         }
 
@@ -53,9 +50,7 @@ public class HttpTaskManager extends FileBackendTasksManager {
                 int id = subtask.getId();
                 this.subtasks.put(id, subtask);
                 this.prioritizedTasks.add(subtask);
-                if (id > this.id) {
-                    this.id = id;
-                }
+                checkLastIdForCounter(id);
             }
         }
 
@@ -65,9 +60,7 @@ public class HttpTaskManager extends FileBackendTasksManager {
             for (Epic epic: epics){
                 int id = epic.getId();
                 this.epics.put(id, epic);
-                if (id > this.id) {
-                    this.id = id;
-                }
+                checkLastIdForCounter(id);
             }
         }
 
@@ -79,7 +72,11 @@ public class HttpTaskManager extends FileBackendTasksManager {
             }
         }
     }
-
+    private void checkLastIdForCounter(int id){
+        if (id > this.id) {
+            this.id = id;
+        }
+    }
     @Override
     protected void save() {
         String jsonTasks = gson.toJson(getTasks());
