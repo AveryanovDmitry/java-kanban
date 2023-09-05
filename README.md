@@ -69,7 +69,8 @@ Repository for homework project.
 * Добавлена в программу новая функциональность — трекер отображает последние просмотренные пользователем задачи.
 
 Пример формирования истории просмотров задач после вызовов методов менеджера:
-![img_1.png](History.png)
+![History](https://github.com/AveryanovDmitry/java-kanban/assets/45557026/efc9eafa-7778-4252-9f00-644b58a736e5)
+
 
 ### **Утилитарный класс**
 
@@ -92,7 +93,8 @@ Repository for homework project.
 ### **Вторая реализация менеджера**
 
 * Добавлен класс менеджера, который будет после каждой операции автоматически сохранять все задачи и их состояние в специальный файл.
-![img.png](img.png)
+  
+![img](https://github.com/AveryanovDmitry/java-kanban/assets/45557026/98b09f45-c440-408c-bc72-aeaa80cdad2b)
 
 ## **_СПРИНТ 7_**
 
@@ -105,7 +107,7 @@ Repository for homework project.
 ## **_СПРИНТ 8_**
 
 * Настроен доступ к методам менеджера через HTTP-запросы
-![img_1.png](img_1.png)
+![img_1](https://github.com/AveryanovDmitry/java-kanban/assets/45557026/c1b7212a-188b-4b4d-a57c-5b21d2f9963d)
 
 * Добавлено хранение состояния менеджера из файлов на отдельный сервер
 
